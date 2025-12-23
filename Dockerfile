@@ -15,26 +15,21 @@ RUN apt-get update && \
         fonts-freefont-ttf \
         fonts-crosextra-caladea \
         fonts-crosextra-carlito \
-        wget \
-        unzip \
         ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# Установка PT Sans и PT Serif (основные шрифты для ГОСТ)
-RUN mkdir -p /usr/share/fonts/truetype/PTFonts && \
-    cd /tmp && \
-    wget -q "https://fonts.google.com/download?family=PT%20Sans" -O ptsans.zip && \
-    unzip -q ptsans.zip -d /usr/share/fonts/truetype/PTFonts/ && \
-    wget -q "https://fonts.google.com/download?family=PT%20Serif" -O ptserif.zip && \
-    unzip -q ptserif.zip -d /usr/share/fonts/truetype/PTFonts/ && \
-    rm -f ptsans.zip ptserif.zip && \
-    fc-cache -fv
+# Установка дополнительных шрифтов для лучшей совместимости
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        fonts-noto-core \
+        fonts-noto-ui-core && \
+    rm -rf /var/lib/apt/lists/*
 
 # Проверка установленных компонентов
 RUN gs --version && \
     echo "Ghostscript installed successfully" && \
-    fc-list | grep -i "PT" && \
-    echo "Russian fonts installed successfully"
+    fc-list | grep -i "Liberation\|DejaVu\|Noto" && \
+    echo "Fonts installed successfully"
 
 # Настройка Ghostscript для PDF/A
 RUN mkdir -p /etc/ghostscript && \
